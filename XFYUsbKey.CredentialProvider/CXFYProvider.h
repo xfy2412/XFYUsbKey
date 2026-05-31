@@ -67,6 +67,8 @@ class CXFYProvider : public ICredentialProvider,
 
     // Called by the credential when user clicks "Rescan USB"
     static void TriggerManualRefresh();
+    // Called when login fails — stops repeated wrong credential submissions
+    static void LoginFailed();
 
   protected:
     CXFYProvider();

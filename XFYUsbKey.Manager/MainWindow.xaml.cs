@@ -52,12 +52,14 @@ namespace XFYUsbKey.Manager
             var drives = new List<DriveItem>();
             foreach (var di in DriveInfo.GetDrives())
             {
-                if (!di.IsReady || (di.DriveType != DriveType.Removable && di.DriveType != DriveType.CDRom))
+                if (!di.IsReady)
                 {
                     continue;
                 }
                 string size = $"{di.TotalSize / 1073741824.0:F1}GB";
-                string typeTag = di.DriveType == DriveType.Removable ? " [USB]" : " [CD]";
+                string typeTag = di.DriveType == DriveType.Removable ? " [USB]" :
+                                 di.DriveType == DriveType.CDRom ? " [CD]" :
+                                 di.DriveType == DriveType.Fixed ? " [本地]" : " [?]";
                 drives.Add(new DriveItem
                 {
                     Path = di.Name.TrimEnd('\\'),
@@ -109,7 +111,7 @@ namespace XFYUsbKey.Manager
 
                 // 数据格式：username\0password (UTF-8, null-separated)
                 string username = $"{Environment.UserDomainName}\\{Environment.UserName}";
-                string keyData = $"{username}\0{password}";
+                string keyData = $"{username}\0{password}\0";
                 byte[] plainData = Encoding.UTF8.GetBytes(keyData);
                 byte[] encrypted = ProtectedData.Protect(plainData, entropy, DataProtectionScope.LocalMachine);
 

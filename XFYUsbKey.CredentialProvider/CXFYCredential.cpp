@@ -73,7 +73,7 @@ void CXFYCredential::SetUsername(_In_ PCWSTR pwzUsername)
     OutputDebugString(L"[XFY] SetUsername called\n");
     CoTaskMemFree(_pszQualifiedUserName);
     SHStrDupW(pwzUsername, &_pszQualifiedUserName);
-    _fIsLocalUser = (wcsstr(pwzUsername, L".") == pwzUsername); // ".\xxx" = local user
+    // _fIsLocalUser is set in Initialize, keep as true for V1 tile
 }
 
 // Initializes one credential with the field information passed in.
@@ -350,6 +350,11 @@ HRESULT CXFYCredential::GetSerialization(_Out_ CREDENTIAL_PROVIDER_GET_SERIALIZA
     *pcpsiOptionalStatusIcon = CPSI_NONE;
     ZeroMemory(pcpcs, sizeof(*pcpcs));
     OutputDebugString(L"[XFY] GetSerialization called\n");
+    WCHAR szDbg[256];
+    StringCchPrintf(szDbg, 256, L"[XFY] GS: user='%s' isLocal=%d pwzKey=%d\n",
+        _pszQualifiedUserName ? _pszQualifiedUserName : L"null",
+        _fIsLocalUser, _pwzKeyPassword != nullptr ? 1 : 0);
+    OutputDebugString(szDbg);
 
     // For empty tile, avoid authentication since no user is associated.
     if (_pszQualifiedUserName == nullptr)
@@ -364,6 +369,8 @@ HRESULT CXFYCredential::GetSerialization(_Out_ CREDENTIAL_PROVIDER_GET_SERIALIZA
     {
         // Use private password (USB key) if available, otherwise use UI input
         PWSTR pwzPassword = _pwzKeyPassword ? _pwzKeyPassword : _rgFieldStrings[SFI_PASSWORD];
+        OutputDebugString(L"[XFY] GetSerialization: local user path\n");
+
         PWSTR pwzProtectedPassword;
         hr = ProtectIfNecessaryAndCopyPassword(pwzPassword, _cpus, &pwzProtectedPassword);
         if (SUCCEEDED(hr))
@@ -373,34 +380,43 @@ HRESULT CXFYCredential::GetSerialization(_Out_ CREDENTIAL_PROVIDER_GET_SERIALIZA
             hr = SplitDomainAndUsername(_pszQualifiedUserName, &pszDomain, &pszUsername);
             if (SUCCEEDED(hr))
             {
+                WCHAR szDbg[256];
+                StringCchPrintf(szDbg, 256, L"[XFY] Auth: domain='%s' user='%s'\n", pszDomain, pszUsername);
+                OutputDebugString(szDbg);
+
                 KERB_INTERACTIVE_UNLOCK_LOGON kiul;
                 hr = KerbInteractiveUnlockLogonInit(pszDomain, pszUsername, pwzProtectedPassword, _cpus, &kiul);
+                OutputDebugString(SUCCEEDED(hr) ? L"[XFY] KerbInteractiveUnlockLogonInit OK\n" : L"[XFY] KerbInteractiveUnlockLogonInit FAILED\n");
                 if (SUCCEEDED(hr))
                 {
-                    // We use KERB_INTERACTIVE_UNLOCK_LOGON in both unlock and logon scenarios.  It contains a
-                    // KERB_INTERACTIVE_LOGON to hold the creds plus a LUID that is filled in for us by Winlogon
-                    // as necessary.
                     hr = KerbInteractiveUnlockLogonPack(kiul, &pcpcs->rgbSerialization, &pcpcs->cbSerialization);
+                    OutputDebugString(SUCCEEDED(hr) ? L"[XFY] KerbInteractiveUnlockLogonPack OK\n" : L"[XFY] KerbInteractiveUnlockLogonPack FAILED\n");
                     if (SUCCEEDED(hr))
                     {
                         ULONG ulAuthPackage;
                         hr = RetrieveNegotiateAuthPackage(&ulAuthPackage);
+                        OutputDebugString(SUCCEEDED(hr) ? L"[XFY] RetrieveNegotiateAuthPackage OK\n" : L"[XFY] RetrieveNegotiateAuthPackage FAILED\n");
                         if (SUCCEEDED(hr))
                         {
                             pcpcs->ulAuthenticationPackage = ulAuthPackage;
                             pcpcs->clsidCredentialProvider = CLSID_CXFY;
-                            // At this point the credential has created the serialized credential used for logon
-                            // By setting this to CPGSR_RETURN_CREDENTIAL_FINISHED we are letting logonUI know
-                            // that we have all the information we need and it should attempt to submit the
-                            // serialized credential.
                             *pcpgsr = CPGSR_RETURN_CREDENTIAL_FINISHED;
+                            OutputDebugString(L"[XFY] GetSerialization: SUCCESS\n");
                         }
                     }
                 }
                 CoTaskMemFree(pszDomain);
                 CoTaskMemFree(pszUsername);
             }
+            else
+            {
+                OutputDebugString(L"[XFY] SplitDomainAndUsername FAILED\n");
+            }
             CoTaskMemFree(pwzProtectedPassword);
+        }
+        else
+        {
+            OutputDebugString(L"[XFY] ProtectIfNecessaryAndCopyPassword FAILED\n");
         }
     }
     else
@@ -503,9 +519,16 @@ HRESULT CXFYCredential::ReportResult(NTSTATUS ntsStatus,
         }
     }
 
-    // If we failed the logon, try to erase the password field.
+    // If we failed the logon, clear USB key and stop auto-retry.
     if (FAILED(HRESULT_FROM_NT(ntsStatus)))
     {
+        CXFYProvider::LoginFailed();
+        if (_pwzKeyPassword != nullptr)
+        {
+            SecureZeroMemory(_pwzKeyPassword, wcslen(_pwzKeyPassword) * sizeof(WCHAR));
+            CoTaskMemFree(_pwzKeyPassword);
+            _pwzKeyPassword = nullptr;
+        }
         if (_pCredProvCredentialEvents)
         {
             _pCredProvCredentialEvents->SetFieldString(this, SFI_PASSWORD, L"");

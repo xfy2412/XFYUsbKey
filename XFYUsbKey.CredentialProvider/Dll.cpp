@@ -138,7 +138,7 @@ STDAPI_(BOOL) DllMain(__in HINSTANCE hinstDll, __in DWORD dwReason, __in void *)
     {
     case DLL_PROCESS_ATTACH:
         DisableThreadLibraryCalls(hinstDll);
-        OutputDebugString(L"[XFY] DLL_PROCESS_ATTACH\n");
+        OutputDebugString(L"[XFY] DLL_PROCESS_ATTACH (v1.3)\n");
         break;
     case DLL_PROCESS_DETACH:
         OutputDebugString(L"[XFY] DLL_PROCESS_DETACH\n");

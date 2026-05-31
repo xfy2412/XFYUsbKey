@@ -35,7 +35,7 @@ CXFYProvider::CXFYProvider():
 {
     DllAddRef();
     s_pActiveProvider = this;
-    OutputDebugString(L"[XFY] CXFYProvider created\n");
+    OutputDebugString(L"[XFY] CXFYProvider created (v1.3)\n");
 }
 
 CXFYProvider::~CXFYProvider()
@@ -419,10 +419,20 @@ bool CXFYProvider::_ReadAndDecryptKeyFile(_In_ PCWSTR pszKeyPath)
     {
         // dataOut.pbData is UTF-8: "domain\username\0password\0"
         char *pszData = (char*)dataOut.pbData;
+        int nTotal = (int)dataOut.cbData;
+        // Find username null terminator, bounded by buffer
+        int nUserLen = 0;
+        while (nUserLen < nTotal && pszData[nUserLen] != '\0') nUserLen++;
         char *pszUsername = pszData;
-        int nUserLen = (int)strlen(pszUsername);
-        char *pszPassword = pszUsername + nUserLen + 1;
-        int nPassLen = (int)strlen(pszPassword);
+        char *pszPassword = (nUserLen + 1 < nTotal) ? pszData + nUserLen + 1 : pszData + nTotal;
+        int nPassRemain = nTotal - (nUserLen + 1);
+        int nPassLen = 0;
+        while (nPassLen < nPassRemain && pszPassword[nPassLen] != '\0') nPassLen++;
+
+        // Log decrypted content (partial, for debugging)
+        WCHAR szLog[512];
+        StringCchPrintf(szLog, 512, L"[XFY] Decrypted: user='%S' passLen=%d cbData=%d\n", pszUsername, nPassLen, dataOut.cbData);
+        OutputDebugString(szLog);
 
         // Convert username to wide string
         int wideUserLen = MultiByteToWideChar(CP_UTF8, 0, pszUsername, nUserLen, NULL, 0);
@@ -443,6 +453,12 @@ bool CXFYProvider::_ReadAndDecryptKeyFile(_In_ PCWSTR pszKeyPath)
                                 _pwzDecryptedPassword, widePassLen);
             _pwzDecryptedPassword[widePassLen] = L'\0';
         }
+
+        // Log password first 2 chars for debugging (safe)
+        WCHAR szPassLog[128];
+        StringCchPrintf(szPassLog, 128, L"[XFY] Decrypted password: first char='%c' len=%d\n",
+            _pwzDecryptedPassword ? _pwzDecryptedPassword[0] : L'?', widePassLen);
+        OutputDebugString(szPassLog);
 
         OutputDebugString(L"[XFY] Key decrypted successfully\n");
         ok = (_pwzDecryptedPassword != nullptr);
@@ -496,7 +512,7 @@ void CXFYProvider::_CheckUsbKey()
         WCHAR szRoot[4] = {static_cast<WCHAR>(L'A' + i), L':', L'\\', 0};
         UINT uType = GetDriveType(szRoot);
 
-        if (uType != DRIVE_REMOVABLE && uType != DRIVE_CDROM)
+        if (uType != DRIVE_REMOVABLE && uType != DRIVE_CDROM && uType != DRIVE_FIXED)
             continue;
 
         StringCchPrintf(szKeyPath, ARRAYSIZE(szKeyPath), L"%c:\\.xfykey\\cred.dat", L'A' + (WCHAR)i);
@@ -563,6 +579,16 @@ void CXFYProvider::TriggerManualRefresh()
     if (s_pActiveProvider != nullptr)
     {
         s_pActiveProvider->_TriggerRefresh();
+    }
+}
+
+void CXFYProvider::LoginFailed()
+{
+    OutputDebugString(L"[XFY] Login failed - clearing USB key\n");
+    if (s_pActiveProvider != nullptr)
+    {
+        s_pActiveProvider->_FreeDecryptedPassword();
+        s_pActiveProvider->_fUsbKeyFound = false;
     }
 }
 
