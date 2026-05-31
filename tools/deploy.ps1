@@ -12,7 +12,7 @@ $Guid       = "{c101a055-a911-4a8a-a179-beeb4cf24b33}"
 $DllName    = "XFYUsbKeyCredentialProvider.dll"
 
 # VMware 共享目录（源文件位置）
-$ShareRoot  = "\\vmware-host\Shared Folders\VMShare\Windows-classic-samples\Samples\XFYUsbKey\XFYUsbKey.CredentialProvider"
+$ShareRoot = "\\vmware-host\Shared Folders\VMShare\XFY\new\XFYUsbKey"
 
 # 本地工作目录（所有操作在本地进行）
 $WorkDir    = "$env:LOCALAPPDATA\CredProvDeploy"
@@ -76,9 +76,7 @@ Write-Host "[*] 复制文件到本地: $WorkDir" -ForegroundColor Yellow
 
 $searchPaths = @(
     "x64\Release\$DllName",
-    "x64\Debug\$DllName",
-    "cpp\Release\$DllName",
-    "cpp\Debug\$DllName"
+    "x64\Debug\$DllName"
 )
 $dllSource = $null
 foreach ($relPath in $searchPaths) {
@@ -95,7 +93,7 @@ if (-not $dllSource) {
 Write-Host "[+] 找到 DLL: $dllSource" -ForegroundColor Green
 
 # 查找 .reg 文件
-$regSource = Join-Path $ShareRoot "register.reg"
+$regSource = Join-Path $ShareRoot "XFYUsbKey.CredentialProvider\register.reg"
 if (-not (Test-Path $regSource)) {
     Write-Host "[-] 未找到 register.reg" -ForegroundColor Red
     exit 1
@@ -104,7 +102,7 @@ if (-not (Test-Path $regSource)) {
 # 复制到本地
 Copy-Item $dllSource  (Join-Path $WorkDir $DllName) -Force
 Copy-Item $regSource  (Join-Path $WorkDir "register.reg") -Force
-$unregSource = Join-Path $ShareRoot "Unregister.reg"
+$unregSource = Join-Path $ShareRoot "XFYUsbKey.CredentialProvider\Unregister.reg"
 if (Test-Path $unregSource) {
     Copy-Item $unregSource (Join-Path $WorkDir "Unregister.reg") -Force
 }
