@@ -44,9 +44,7 @@ Name: "manager\avalonia"; Description: "现代 Avalonia 版本 (需 .NET 9 运�
 
 [Files]
 ; ——— Credential Provider ———
-Source: "..\x64\Release\XFYUsbKeyCredentialProvider.dll"; DestDir: "{sys}"; Flags: ignoreversion 32bit; Components: cp; Check: IsWin64
-Source: "..\XFYUsbKey.CredentialProvider\register.reg"; DestDir: "{tmp}"; Flags: ignoreversion; Components: cp
-Source: "..\XFYUsbKey.CredentialProvider\Unregister.reg"; DestDir: "{tmp}"; Flags: ignoreversion; Components: cp
+Source: "..\x64\Release\XFYUsbKeyCredentialProvider.dll"; DestDir: "{sys}"; Flags: ignoreversion; Components: cp; Check: IsWin64
 
 ; ——— Manager (WPF) ———
 Source: "{#ManagerWpfDir}\XFYUsbKey.Manager.exe"; DestDir: "{app}\Manager"; Flags: ignoreversion; Components: manager\wpf
@@ -58,6 +56,7 @@ Source: "{#ManagerAvaloniaDir}\XFYUsbKey.Manager.Avalonia.exe"; DestDir: "{app}\
 Source: "{#ManagerAvaloniaDir}\*.dll"; DestDir: "{app}\Manager"; Flags: ignoreversion skipifsourcedoesntexist; Components: manager\avalonia
 Source: "{#ManagerAvaloniaDir}\*.json"; DestDir: "{app}\Manager"; Flags: ignoreversion skipifsourcedoesntexist; Components: manager\avalonia
 Source: "{#ManagerAvaloniaDir}\*.pdb"; DestDir: "{app}\Manager"; Flags: ignoreversion skipifsourcedoesntexist; Components: manager\avalonia
+Source: "{#ManagerAvaloniaDir}\runtimes\*"; DestDir: "{app}\Manager\runtimes"; Flags: ignoreversion skipifsourcedoesntexist createallsubdirs recursesubdirs; Components: manager\avalonia
 
 [Icons]
 Name: "{group}\XFY USB Key 管理器"; Filename: "{app}\Manager\XFYUsbKey.Manager.exe"; Components: manager\wpf
@@ -67,18 +66,14 @@ Name: "{commondesktop}\XFY USB Key"; Filename: "{app}\Manager\XFYUsbKey.Manager.
 Name: "{commondesktop}\XFY USB Key (现代版)"; Filename: "{app}\Manager\XFYUsbKey.Manager.Avalonia.exe"; Components: manager\avalonia
 
 [Registry]
-; 注册 Credential Provider
-Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{{c101a055-a911-4a8a-a179-beeb4cf24b33}}"; ValueType: string; ValueName: ""; ValueData: "XFYUsbKeyCredentialProvider"; Components: cp; Flags: uninsdeletekey
-Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}}"; ValueType: string; ValueName: ""; ValueData: "XFYUsbKeyCredentialProvider"; Components: cp; Flags: uninsdeletekey
-Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}}\InprocServer32"; ValueType: string; ValueName: ""; ValueData: "{sys}\XFYUsbKeyCredentialProvider.dll"; Components: cp; Flags: uninsdeletekey
-Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}}\InprocServer32"; ValueType: string; ValueName: "ThreadingModel"; ValueData: "Apartment"; Components: cp
+; 注册 Credential Provider（64 位安装程序不会触发 WOW64 重定向）
+Root: HKLM; Subkey: "SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\Credential Providers\{{c101a055-a911-4a8a-a179-beeb4cf24b33}"; ValueType: string; ValueName: ""; ValueData: "XFYUsbKeyCredentialProvider"; Components: cp; Flags: uninsdeletekey
+Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}"; ValueType: string; ValueName: ""; ValueData: "XFYUsbKeyCredentialProvider"; Components: cp; Flags: uninsdeletekey
+Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}\InprocServer32"; ValueType: string; ValueName: ""; ValueData: "{sys}\XFYUsbKeyCredentialProvider.dll"; Components: cp; Flags: uninsdeletekey
+Root: HKCR; Subkey: "CLSID\{{c101a055-a911-4a8a-a179-beeb4cf24b33}\InprocServer32"; ValueType: string; ValueName: "ThreadingModel"; ValueData: "Apartment"; Components: cp
 
-[Run]
-; 注册 CP（确保 DLL 已就位后执行 regedit）
-Filename: "regedit.exe"; Parameters: "/s ""{tmp}\register.reg"""; Flags: runhidden; Components: cp
-
-[UninstallRun]
-Filename: "regedit.exe"; Parameters: "/s ""{tmp}\Unregister.reg"""; Flags: runhidden; Components: cp
+; [Registry] 段已自动处理注册表写入和卸载清理
+; 不需要再用 regedit.exe 导入 .reg 文件
 
 [Code]
 function IsDotNet9Installed: Boolean;
