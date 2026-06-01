@@ -1,0 +1,88 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XFYUsbKey.Manager.Avalonia.Views.Pages.KeyManagementPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Classes="settings-container" Spacing="8">
+            <!-- USB Key Status Card -->
+            <Border Classes="card" Padding="24">
+                <StackPanel Spacing="0">
+                    <TextBlock Text="USB 密钥状态" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <TextBlock x:Name="StatusDetail" Text="检测 USB 设备中…"
+                               FontSize="13" Margin="0,4,0,16"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <Border x:Name="StatusBadge" Classes="status-badge warning" Padding="12,8">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock x:Name="StatusText" Text="未检测到 USB 密钥" FontSize="13" />
+                            <Button x:Name="BtnRefresh" Grid.Column="1" Background="Transparent"
+                                    BorderThickness="0" FontSize="12" Padding="8,0"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Cursor="Hand" Content="⟳ 刷新" />
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="请插入一个 U 盘，然后选择它作为密钥载体。" FontSize="12"
+                               Margin="0,12,0,0"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Configuration Card -->
+            <Border Classes="card" Padding="24">
+                <StackPanel Spacing="16">
+                    <TextBlock Text="密钥配置" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <TextBlock Text="将 U 盘配置为 Windows 登录密钥，插入 U 盘即可自动登录。"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                    <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto" RowSpacing="12">
+                        <TextBlock Text="目标 U 盘" Grid.Row="0" Grid.Column="0"
+                                   VerticalAlignment="Center" FontSize="13"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <ComboBox x:Name="DriveSelector" Grid.Row="0" Grid.Column="1" MinWidth="200"
+                                  PlaceholderText="请选择一个 U 盘…"
+                                  Classes="compact">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Display}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <TextBlock Text="Windows 密码" Grid.Row="1" Grid.Column="0"
+                                   VerticalAlignment="Center" FontSize="13"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <TextBox x:Name="PasswordBox" Grid.Row="1" Grid.Column="1" MinWidth="200"
+                                 PasswordChar="●" Watermark="输入当前 Windows 登录密码" />
+                    </Grid>
+
+                    <Button x:Name="BtnWriteKey" Classes="accent" Content="写入 U 盘密钥" Padding="20,8"
+                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <!-- Instructions Card -->
+            <Border Classes="card subtle" Padding="20">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Border Width="32" Height="32" CornerRadius="16"
+                            Background="{DynamicResource SystemAccentBrush}" VerticalAlignment="Top">
+                        <TextBlock Text="i" FontSize="14" FontWeight="Bold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="使用步骤" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        <TextBlock TextWrapping="Wrap" FontSize="12" LineHeight="18"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                            1. 插入 U 盘，选择目标磁盘
+                            2. 输入当前 Windows 登录密码
+                            3. 点击"写入 U 盘密钥"将凭据加密保存
+                            4. 锁屏后插入 U 盘即可自动登录
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

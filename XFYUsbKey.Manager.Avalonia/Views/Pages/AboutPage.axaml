@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XFYUsbKey.Manager.Avalonia.Views.Pages.AboutPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Classes="settings-container" Spacing="8">
+            <!-- App Info Card -->
+            <Border Classes="card" Padding="32" HorizontalAlignment="Center" MinWidth="400">
+                <StackPanel Spacing="0" HorizontalAlignment="Center">
+                    <!-- App Icon -->
+                    <Image Width="72" Height="72" Source="/Assets/logo.png"
+                           RenderOptions.BitmapInterpolationMode="HighQuality"
+                           HorizontalAlignment="Center" Margin="0,0,0,16" />
+
+                    <TextBlock Text="XFY USB Key" FontSize="22" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                               HorizontalAlignment="Center" />
+
+                    <TextBlock Text="将 U 盘变为您的 Windows 登录密钥"
+                               FontSize="13" Margin="0,4,0,20"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+
+                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                            CornerRadius="8" Padding="20,16" Margin="0,0,0,16">
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="80,*">
+                                <TextBlock Text="版本" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Grid.Column="1" Text="1.0.0" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*">
+                                <TextBlock Text="目标平台" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Grid.Column="1" Text="Windows 10/11" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="80,*">
+                                <TextBlock Text="框架" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                <TextBlock Grid.Column="1" Text="Avalonia 11 · .NET 9" FontSize="13"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="© 2026 XFY. All rights reserved."
+                               FontSize="11" HorizontalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorDisabledBrush}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Links Card -->
+            <Border Classes="card" Padding="20" HorizontalAlignment="Center" MinWidth="400">
+                <StackPanel Spacing="8">
+                    <Button Classes="link" HorizontalAlignment="Stretch"
+                            Background="Transparent" BorderThickness="0"
+                            Cursor="Hand">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <TextBlock Text="" FontSize="14" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource SystemAccentBrush}" />
+                            <TextBlock Grid.Column="1" Text="项目主页" FontSize="13" Margin="8,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <TextBlock Grid.Column="2" Text="›" FontSize="16"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Grid>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

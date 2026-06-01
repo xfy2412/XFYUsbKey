@@ -1,0 +1,109 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:nav="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="12">
+                <Border Classes="card" Padding="24"><TextBlock Text="Card Preview" /></Border>
+                <Border Classes="card subtle" Padding="24"><TextBlock Text="Subtle Card" /></Border>
+                <Border Classes="status-badge warning" Padding="12,8"><TextBlock Text="Warning" /></Border>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- ============ Resources ============ -->
+    <Styles.Resources>
+        <ResourceDictionary>
+            <x:Double x:Key="SettingsContainerWidth">720</x:Double>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+    <!-- ============ Settings Layout ============ -->
+    <Style Selector="StackPanel.settings-container">
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MaxWidth" Value="{StaticResource SettingsContainerWidth}" />
+        <Setter Property="Spacing" Value="8" />
+    </Style>
+
+    <!-- ============ Card Styles ============ -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+    </Style>
+
+    <Style Selector="Border.card.subtle">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+    </Style>
+
+    <!-- ============ Status Badges ============ -->
+    <Style Selector="Border.status-badge">
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+
+    <Style Selector="Border.status-badge.warning">
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+    </Style>
+
+    <Style Selector="Border.status-badge.success">
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+    </Style>
+
+    <Style Selector="Border.status-badge.error">
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
+        <Setter Property="TextBlock.Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+    </Style>
+
+    <!-- ============ Setting Item CheckBox ============ -->
+    <Style Selector="CheckBox.setting-item">
+        <Setter Property="Padding" Value="16" />
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox.setting-item /template/ ContentPresenter#ContentPresenter">
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+
+    <!-- ============ Accent Button ============ -->
+    <Style Selector="Button.accent">
+        <Setter Property="Background" Value="{DynamicResource SystemAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="20,8" />
+    </Style>
+
+    <Style Selector="Button.accent:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SystemAccentBrushLight1}" />
+    </Style>
+
+    <Style Selector="Button.accent:pressed">
+        <Setter Property="Background" Value="{DynamicResource SystemAccentBrushDark1}" />
+    </Style>
+
+    <!-- ============ Compact ComboBox ============ -->
+    <Style Selector="ComboBox.compact">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <!-- ============ NavigationView Styles ============ -->
+    <Style Selector="nav|NavigationView">
+        <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+    </Style>
+
+    <Style Selector="nav|NavigationViewItem">
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- ============ Title Bar ============ -->
+    <Style Selector="Window /template/ Border#PART_TitleBar">
+        <Setter Property="Height" Value="48" />
+    </Style>
+</Styles>

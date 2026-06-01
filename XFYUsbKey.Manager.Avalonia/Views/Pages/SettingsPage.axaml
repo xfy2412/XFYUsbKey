@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="XFYUsbKey.Manager.Avalonia.Views.Pages.SettingsPage">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Classes="settings-container" Spacing="8">
+            <!-- USB Removal Action Card -->
+            <Border Classes="card" Padding="24">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="拔出 U 盘时" FontSize="16" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <TextBlock Text="选择拔出 U 盘后自动执行的操作"
+                               FontSize="13"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <RadioButton x:Name="RdoLock" GroupName="UsbRemoval" Content="锁定电脑"
+                                 IsChecked="True" />
+                    <RadioButton x:Name="RdoLogoff" GroupName="UsbRemoval" Content="注销" />
+                    <RadioButton x:Name="RdoShutdown" GroupName="UsbRemoval" Content="关机" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

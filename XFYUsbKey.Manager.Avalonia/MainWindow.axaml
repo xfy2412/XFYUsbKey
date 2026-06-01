@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:nav="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
+        xmlns:local="clr-namespace:XFYUsbKey.Manager.Avalonia"
+        x:Class="XFYUsbKey.Manager.Avalonia.MainWindow"
+        Title="XFY USB Key"
+        Width="960" Height="640"
+        WindowStartupLocation="CenterScreen"
+        TransparencyLevelHint="Mica"
+        Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+        Icon="/Assets/logo.png">
+    <Grid RowDefinitions="48,*">
+        <!-- Title Bar -->
+        <Border Grid.Row="0" Height="48" Padding="16,0,20,0">
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                <!-- App icon + name -->
+                <Image Width="18" Height="18" Source="/Assets/logo.png"
+                       RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <TextBlock Grid.Column="1" Text="XFY USB Key" FontSize="12"
+                           VerticalAlignment="Center" Margin="10,0,0,0"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <!-- Version -->
+                <TextBlock Grid.Column="3" Text="v1.0.0" FontSize="12"
+                           VerticalAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </Grid>
+        </Border>
+
+        <!-- NavigationView -->
+        <nav:NavigationView Grid.Row="1"
+                            x:Name="NavView"
+                            PaneDisplayMode="Left"
+                            OpenPaneLength="220"
+                            IsSettingsVisible="False"
+                            IsPaneToggleButtonVisible="False"
+                            ItemInvoked="NavView_OnItemInvoked"
+                            CompactPaneLength="48">
+            <nav:NavigationView.MenuItems>
+                <nav:NavigationViewItem Content="密钥管理" Tag="KeyManagement" IsSelected="True">
+                    <nav:NavigationViewItem.IconSource>
+                        <local:FluentIconSource Glyph="&#xE768;" />
+                    </nav:NavigationViewItem.IconSource>
+                </nav:NavigationViewItem>
+                <nav:NavigationViewItem Content="设置" Tag="Settings">
+                    <nav:NavigationViewItem.IconSource>
+                        <local:FluentIconSource Glyph="&#xE713;" />
+                    </nav:NavigationViewItem.IconSource>
+                </nav:NavigationViewItem>
+                <nav:NavigationViewItem Content="关于" Tag="About">
+                    <nav:NavigationViewItem.IconSource>
+                        <local:FluentIconSource Glyph="&#xE946;" />
+                    </nav:NavigationViewItem.IconSource>
+                </nav:NavigationViewItem>
+            </nav:NavigationView.MenuItems>
+
+            <!-- Content Area -->
+            <Grid RowDefinitions="Auto,*" Margin="28,20,28,0">
+                <TextBlock x:Name="PageTitle" FontSize="24" FontWeight="SemiBold"
+                           Text="密钥管理"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <ContentControl Grid.Row="1" x:Name="PageContent" Margin="0,12,0,20" />
+            </Grid>
+        </nav:NavigationView>
+    </Grid>
+</Window>
